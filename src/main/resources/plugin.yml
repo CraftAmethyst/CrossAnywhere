@@ -1,0 +1,60 @@
+name: CrossAnywhere
+version: '${version}'
+main: io.github.qianmo0721.crossAnywhere.CrossAnywhere
+api-version: '1.21'
+prefix: CrossAnywhere
+authors: [ QianMo0721 ]
+description: Cross-world teleport and waypoint system.
+commands:
+  ca:
+    description: CrossAnywhere main command
+    aliases: [stp]
+permissions:
+  crossanywhere.admin:
+    description: Grants all CrossAnywhere permissions
+    default: op
+  crossanywhere.personal:
+    description: Manage personal waypoints
+    default: true
+  crossanywhere.personal.tp:
+    description: Teleport to personal waypoints
+    default: true
+  crossanywhere.global:
+    description: Manage global waypoints
+    default: op
+  crossanywhere.global.tp:
+    description: Teleport to global waypoints
+    default: true
+  crossanywhere.list:
+    description: List waypoints
+    default: true
+  crossanywhere.tp:
+    description: Teleport to a player
+    default: op
+  crossanywhere.tphere:
+    description: Teleport a player to you
+    default: op
+  crossanywhere.tpa:
+    description: Request teleport to a player
+    default: true
+  crossanywhere.tpahere:
+    description: Request a player to teleport to you
+    default: true
+  crossanywhere.back:
+    description: Use back command
+    default: true
+  crossanywhere.easy:
+    description: Use easy teleport syntax
+    default: true
+  crossanywhere.crossworld:
+    description: Allow cross-world teleports
+    default: op
+  crossanywhere.cooldown.bypass:
+    description: Bypass teleport cooldowns
+    default: op
+  crossanywhere.cost.bypass:
+    description: Bypass teleport costs
+    default: op
+  crossanywhere.safety.bypass:
+    description: Bypass safety checks
+    default: op

@@ -1,7 +1,7 @@
 name: CrossAnywhere
 version: '${version}'
 main: io.github.qianmo0721.crossAnywhere.CrossAnywhere
-api-version: '1.21'
+api-version: '1.20'
 prefix: CrossAnywhere
 authors: [ QianMo0721 ]
 description: Cross-world teleport and waypoint system.
@@ -39,6 +39,9 @@ permissions:
     default: true
   crossanywhere.tpahere:
     description: Request a player to teleport to you
+    default: true
+  crossanywhere.tpa.allowlist:
+    description: Manage direct-teleport allowlist
     default: true
   crossanywhere.back:
     description: Use back command

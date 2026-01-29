@@ -32,42 +32,63 @@ CrossAnywhere is a Paper/Spigot teleport plugin for Minecraft 1.21+ (Java 21). I
 Main command: `/ca` (alias `/stp`)
 
 Waypoints (personal):
-- `/ca setp|setpersonal [-f] <name> [desc...]`
-- `/ca tpp|tpersonal <name>`
-- `/ca delp|delpersonal <name>`
-- `/ca listp|listpersonal`
-- `/ca descp <name> <desc...>`
+
+- `/ca setp|setpersonal [-f] <name> [desc...]` - Create or update a personal waypoint at your current location; use `-f`
+  to overwrite.
+- `/ca tpp|tpersonal <name>` - Teleport to one of your personal waypoints.
+- `/ca delp|delpersonal <name>` - Delete one of your personal waypoints.
+- `/ca listp|listpersonal` - List your personal waypoints.
+- `/ca descp <name> <desc...>` - Set or update the description of a personal waypoint.
 
 Waypoints (global):
-- `/ca setg|setglobal [-f] <name> [desc...]`
-- `/ca tpg|tglobal <name>`
-- `/ca delg|delglobal <name>`
-- `/ca listg|listglobal`
-- `/ca descg <name> <desc...>`
+
+- `/ca setg|setglobal [-f] <name> [desc...]` - Create or update a global waypoint at your current location; use `-f` to
+  overwrite.
+- `/ca tpg|tglobal <name>` - Teleport to a global waypoint.
+- `/ca delg|delglobal <name>` - Delete a global waypoint.
+- `/ca listg|listglobal` - List global waypoints.
+- `/ca descg <name> <desc...>` - Set or update the description of a global waypoint.
 
 Other:
-- `/ca list`
-- `/ca tp <player>`
-- `/ca tphere <player>`
-- `/ca tpa <player>`
-- `/ca tpahere <player>`
-- `/ca cancel`
-- `/ca accept|allow [player]`
-- `/ca deny|reject [player]`
-    - `/ca back`
-    - `/ca confirm`
-    - `/ca cancelconfirm`
-    - `/ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]`
-    - `/ca <name>` (easy_tp=true)
+
+- `/ca list` - List both personal and global waypoints.
+- `/ca tp <player>` - Teleport yourself to the target player (admin permission).
+- `/ca tphere <player>` - Teleport the target player to you (admin permission).
+- `/ca tpa <player>` - Send a teleport request to the target player.
+- `/ca tpahere <player>` - Ask the target player to teleport to you.
+- `/ca cancel` - Cancel all outgoing TPA requests you sent.
+- `/ca accept|allow [player]` - Accept the latest request or a specific player's request.
+- `/ca deny|reject [player]` - Deny the latest request or a specific player's request.
+- `/ca back` - Return to your last recorded location.
+- `/ca confirm` - Confirm a pending unsafe teleport.
+- `/ca cancelconfirm` - Cancel a pending unsafe teleport confirmation.
+- `/ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]` - Import MCDR STP data from
+  a JSON file in the plugin data folder.
+- `/ca <name>` (easy_tp=true) - Easy teleport: personal > global > player.
 
 Shortcut commands:
-- `/setp /tpp /delp /listp /descp`
-- `/setg /tpg /delg /listg /descg`
-- `/tplist`
-- `/back`
-- `/tpa /tpahere /tphere /tpaccept /tpdeny /tpcancel`
-- `/tpconfirm /tpcancelconfirm`
-- `/tp` (only if `commands.override_tp=true`)
+
+- `/setp` - Shortcut for `/ca setp`.
+- `/tpp` - Shortcut for `/ca tpp`.
+- `/delp` - Shortcut for `/ca delp`.
+- `/listp` - Shortcut for `/ca listp`.
+- `/descp` - Shortcut for `/ca descp`.
+- `/setg` - Shortcut for `/ca setg`.
+- `/tpg` - Shortcut for `/ca tpg`.
+- `/delg` - Shortcut for `/ca delg`.
+- `/listg` - Shortcut for `/ca listg`.
+- `/descg` - Shortcut for `/ca descg`.
+- `/tplist` - Shortcut for `/ca list`.
+- `/back` - Shortcut for `/ca back`.
+- `/tpa` - Shortcut for `/ca tpa`.
+- `/tpahere` - Shortcut for `/ca tpahere`.
+- `/tphere` - Shortcut for `/ca tphere`.
+- `/tpaccept` - Shortcut for `/ca accept`.
+- `/tpdeny` - Shortcut for `/ca deny`.
+- `/tpcancel` - Shortcut for `/ca cancel`.
+- `/tpconfirm` - Shortcut for `/ca confirm`.
+- `/tpcancelconfirm` - Shortcut for `/ca cancelconfirm`.
+- `/tp` (only if `commands.override_tp=true`) - Override vanilla `/tp` with CrossAnywhere handling.
 
 ## Permissions
 

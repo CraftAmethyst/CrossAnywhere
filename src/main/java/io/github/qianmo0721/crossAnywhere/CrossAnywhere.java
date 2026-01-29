@@ -5,16 +5,12 @@ import io.github.qianmo0721.crossAnywhere.command.CommandRegistrar;
 import io.github.qianmo0721.crossAnywhere.config.PluginConfig;
 import io.github.qianmo0721.crossAnywhere.i18n.MessageService;
 import io.github.qianmo0721.crossAnywhere.listener.PlayerDeathListener;
-import io.github.qianmo0721.crossAnywhere.manager.BackManager;
-import io.github.qianmo0721.crossAnywhere.manager.ConfirmManager;
-import io.github.qianmo0721.crossAnywhere.manager.CooldownManager;
-import io.github.qianmo0721.crossAnywhere.manager.CostManager;
-import io.github.qianmo0721.crossAnywhere.manager.TpaManager;
+import io.github.qianmo0721.crossAnywhere.manager.*;
+import io.github.qianmo0721.crossAnywhere.repository.TpaAllowlistRepository;
 import io.github.qianmo0721.crossAnywhere.repository.WaypointRepository;
 import io.github.qianmo0721.crossAnywhere.safety.NearbySafeFinder;
 import io.github.qianmo0721.crossAnywhere.safety.SafetyChecker;
 import io.github.qianmo0721.crossAnywhere.teleport.TeleportService;
-import java.util.logging.Level;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
@@ -23,6 +19,7 @@ import org.slf4j.LoggerFactory;
 public final class CrossAnywhere extends JavaPlugin {
     private static final Logger log = LoggerFactory.getLogger(CrossAnywhere.class);
     private WaypointRepository repository;
+    private TpaAllowlistRepository tpaAllowlist;
     private PluginConfig pluginConfig;
     private MessageService messages;
     private CooldownManager cooldownManager;
@@ -45,6 +42,8 @@ public final class CrossAnywhere extends JavaPlugin {
 
         repository = new WaypointRepository(getDataFolder().toPath());
         repository.load();
+        tpaAllowlist = new TpaAllowlistRepository(getDataFolder().toPath());
+        tpaAllowlist.load();
 
         messages = new MessageService(this, pluginConfig.defaultLocale);
         messages.load();
@@ -56,7 +55,7 @@ public final class CrossAnywhere extends JavaPlugin {
         tpaManager = new TpaManager(this, messages);
         rebuildTeleportPipeline();
 
-        commandHandler = new CaCommand(this, pluginConfig, messages, repository,
+        commandHandler = new CaCommand(this, pluginConfig, messages, repository, tpaAllowlist,
                 teleportService, tpaManager, confirmManager, backManager);
 
         PluginCommand command = getCommand("ca");
@@ -71,7 +70,10 @@ public final class CrossAnywhere extends JavaPlugin {
 
         if (pluginConfig.saveIntervalSeconds > 0) {
             long interval = pluginConfig.saveIntervalSeconds * 20L;
-            getServer().getScheduler().runTaskTimerAsynchronously(this, repository::saveIfDirty, interval, interval);
+            getServer().getScheduler().runTaskTimerAsynchronously(this, () -> {
+                repository.saveIfDirty();
+                tpaAllowlist.saveIfDirty();
+            }, interval, interval);
         }
 
         getLogger().info("CrossAnywhere v" + getDescription().getVersion() + " by " + getDescription().getAuthors() + " enabled.");
@@ -81,6 +83,9 @@ public final class CrossAnywhere extends JavaPlugin {
     public void onDisable() {
         if (repository != null) {
             repository.save();
+        }
+        if (tpaAllowlist != null) {
+            tpaAllowlist.save();
         }
     }
 

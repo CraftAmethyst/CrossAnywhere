@@ -10,6 +10,8 @@ help.header: |-
   <gray>/ca tp|tphere <player></gray>
   <gray>/ca tpa|tpahere <player></gray>
   <gray>/ca accept|deny [player]</gray>
+  <gray>/ca tpaallow|tpadisallow <player></gray>
+  <gray>/ca tpaallowlist</gray>
   <gray>/ca back</gray>
   <gray>/ca reload</gray>
   <gray>/ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]</gray>
@@ -29,6 +31,8 @@ usage.del: "<yellow>用法: /ca delp|delg <name></yellow>"
 usage.desc: "<yellow>用法: /ca descp|descg <name> <desc...></yellow>"
 usage.tp_player: "<yellow>用法: /ca tp|tphere <player></yellow>"
 usage.tpa: "<yellow>用法: /ca tpa|tpahere <player></yellow>"
+usage.tpaallow: "<yellow>用法: /ca tpaallow <player></yellow>"
+usage.tpadisallow: "<yellow>用法: /ca tpadisallow <player></yellow>"
 usage.importstp: "<yellow>用法: /ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]</yellow>"
 
 importstp.start: "<gray>正在导入 STP 数据: <white><file></white>...</gray>"
@@ -98,6 +102,8 @@ tpa.duplicate: "<red>你已向该玩家发送过请求。</red>"
 tpa.request.to_target: "<yellow><player></yellow> 请求传送到你这里。 <accept> <deny>"
 tpa.request.here: "<yellow><player></yellow> 请求你传送到他那里。 <accept> <deny>"
 tpa.sent: "<gray>已向 <white><player></white> 发送请求。</gray>"
+tpa.auto.sent: "<green><white><player></white> 允许你直接传送，已传送。</green>"
+tpa.auto.received: "<gray><white><player></white> 已直接传送到你身边。</gray>"
 tpa.cancelled: "<yellow>已取消待处理请求。</yellow>"
 tpa.cancelled_target: "<yellow><player></yellow> 已取消请求。</yellow>"
 tpa.none: "<red>没有待处理请求。</red>"
@@ -113,3 +119,10 @@ tpa.accept:
 tpa.deny:
   label: "<noprefix><gradient:#ffb3b3:#ffd7d7>[拒绝]</gradient>"
   hover: "<noprefix><gray>拒绝请求</gray>"
+
+tpa.allow.added: "<green>已允许 <white><player></white> 直接传送到你身边。</green>"
+tpa.allow.exists: "<yellow><white><player></white> 已在允许列表中。</yellow>"
+tpa.allow.removed: "<green>已移除 <white><player></white> 的直接传送权限。</green>"
+tpa.allow.not_found: "<yellow><white><player></white> 不在允许列表中。</yellow>"
+tpa.allow.list: "<gray>允许直接传送的玩家: <white><list></white></gray>"
+tpa.allow.list_empty: "<gray>允许列表为空。</gray>"

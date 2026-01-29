@@ -1,6 +1,7 @@
 # CrossAnywhere
 
-CrossAnywhere 是一个面向 Paper/Spigot 的传送插件（Minecraft 1.21+，Java 21）。提供个人/全局传送点、TPA 请求、返回点、安全检查、冷却与消耗等功能，所有提示使用 Adventure/MiniMessage 并支持中英双语。
+CrossAnywhere 是一个面向 Paper/Spigot 的传送插件（Minecraft 1.20+，Java 21）。提供个人/全局传送点、TPA
+请求、返回点、安全检查、冷却与消耗等功能，所有提示使用 Adventure/MiniMessage 并支持中英双语。
 
 ## 功能概览
 
@@ -17,7 +18,7 @@ CrossAnywhere 是一个面向 Paper/Spigot 的传送插件（Minecraft 1.21+，J
 
 ## 环境要求
 
-- Paper 1.21+
+- Paper 1.20+
 - Java 21
 
 ## 安装
@@ -57,6 +58,9 @@ CrossAnywhere 是一个面向 Paper/Spigot 的传送插件（Minecraft 1.21+，J
 - `/ca cancel` - 取消你发出的所有 TPA 请求。
 - `/ca accept|allow [player]` - 接受最新请求或指定玩家的请求。
 - `/ca deny|reject [player]` - 拒绝最新请求或指定玩家的请求。
+- `/ca tpaallow <player>` - 允许指定玩家直接传送到你身边（无需同意）。
+- `/ca tpadisallow <player>` - 从允许列表中移除指定玩家。
+- `/ca tpaallowlist` - 查看你的直接传送允许名单。
 - `/ca back` - 返回上一个记录的位置。
 - `/ca confirm` - 确认危险传送。
 - `/ca cancelconfirm` - 取消危险传送确认。
@@ -99,6 +103,7 @@ CrossAnywhere 是一个面向 Paper/Spigot 的传送插件（Minecraft 1.21+，J
 - `crossanywhere.tphere`
 - `crossanywhere.tpa`
 - `crossanywhere.tpahere`
+- `crossanywhere.tpa.allowlist`
 - `crossanywhere.back`
 - `crossanywhere.easy`
 - `crossanywhere.crossworld`
@@ -111,6 +116,7 @@ CrossAnywhere 是一个面向 Paper/Spigot 的传送插件（Minecraft 1.21+，J
 
 - `plugins/CrossAnywhere/personal_waypoints.json`
 - `plugins/CrossAnywhere/global_waypoints.json`
+- `plugins/CrossAnywhere/tpa_allowlist.json`
 - `plugins/CrossAnywhere/stp_uuid_map.json`（可选：导入时的 name -> UUID 映射）
 - `plugins/CrossAnywhere/stp_world_map.json`（可选：导入时的 dimension -> world 映射）
 

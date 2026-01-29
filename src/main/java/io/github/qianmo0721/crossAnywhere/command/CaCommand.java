@@ -9,6 +9,7 @@ import io.github.qianmo0721.crossAnywhere.manager.ConfirmManager;
 import io.github.qianmo0721.crossAnywhere.manager.TpaManager;
 import io.github.qianmo0721.crossAnywhere.manager.TpaRequest;
 import io.github.qianmo0721.crossAnywhere.model.Waypoint;
+import io.github.qianmo0721.crossAnywhere.repository.TpaAllowlistRepository;
 import io.github.qianmo0721.crossAnywhere.repository.WaypointRepository;
 import io.github.qianmo0721.crossAnywhere.teleport.PendingTeleport;
 import io.github.qianmo0721.crossAnywhere.teleport.TeleportResult;
@@ -21,6 +22,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -55,6 +57,9 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
             "cancel",
             "accept", "allow",
             "deny", "reject",
+            "tpaallow",
+            "tpadisallow",
+            "tpaallowlist",
             "back",
             "confirm",
             "cancelconfirm",
@@ -66,6 +71,7 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
     private PluginConfig config;
     private MessageService messages;
     private final WaypointRepository repository;
+    private final TpaAllowlistRepository allowlist;
     private TeleportService teleports;
     private final TpaManager tpaManager;
     private final ConfirmManager confirmManager;
@@ -75,6 +81,7 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
                      PluginConfig config,
                      MessageService messages,
                      WaypointRepository repository,
+                     TpaAllowlistRepository allowlist,
                      TeleportService teleports,
                      TpaManager tpaManager,
                      ConfirmManager confirmManager,
@@ -83,6 +90,7 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
         this.config = config;
         this.messages = messages;
         this.repository = repository;
+        this.allowlist = allowlist;
         this.teleports = teleports;
         this.tpaManager = tpaManager;
         this.confirmManager = confirmManager;
@@ -130,6 +138,9 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
             case "cancel" -> handleCancel(sender);
             case "accept", "allow" -> handleAccept(sender, args);
             case "deny", "reject" -> handleDeny(sender, args);
+            case "tpaallow" -> handleTpaAllow(sender, args);
+            case "tpadisallow" -> handleTpaDisallow(sender, args);
+            case "tpaallowlist" -> handleTpaAllowList(sender);
             case "back" -> handleBack(sender);
             case "confirm" -> handleConfirm(sender);
             case "cancelconfirm" -> handleCancelConfirm(sender);
@@ -175,6 +186,12 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
                     }
                     case "tp", "tpa", "tpahere", "tphere" -> {
                         return suggestPlayerNames(prefix);
+                    }
+                    case "tpaallow" -> {
+                        return suggestPlayerNames(prefix);
+                    }
+                    case "tpadisallow" -> {
+                        return suggestAllowlistNames(player.getUniqueId(), prefix);
                     }
                     case "accept", "allow", "deny", "reject" -> {
                         return suggestPendingSenderNames(player.getUniqueId(), prefix);
@@ -493,6 +510,15 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (toTarget && allowlist.isAllowed(target.getUniqueId(), player.getUniqueId())) {
+            TeleportResult result = teleports.teleport(player, target.getLocation(), TeleportType.TPA, false);
+            if (result == TeleportResult.SUCCESS) {
+                messages.send(sender, "tpa.auto.sent", messages.placeholder("player", target.getName()));
+                messages.send(target, "tpa.auto.received", messages.placeholder("player", player.getName()));
+            }
+            return;
+        }
+
         long now = Instant.now().getEpochSecond();
         TpaRequest.Type type = toTarget ? TpaRequest.Type.TO_TARGET : TpaRequest.Type.HERE;
         TpaRequest request = new TpaRequest(player.getUniqueId(), target.getUniqueId(), type, now,
@@ -573,6 +599,80 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
             messages.send(requester, "tpa.denied", messages.placeholder("player", player.getName()));
         }
         messages.send(sender, "tpa.denied_target", messages.placeholder("player", requester == null ? "?" : requester.getName()));
+    }
+
+    private void handleTpaAllow(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            messages.send(sender, "player_only");
+            return;
+        }
+        if (!hasPermission(player, "crossanywhere.tpa.allowlist")) {
+            messages.send(sender, "no_permission");
+            return;
+        }
+        if (args.length < 2) {
+            messages.send(sender, "usage.tpaallow");
+            return;
+        }
+        OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+        UUID targetId = target.getUniqueId();
+        boolean added = allowlist.add(player.getUniqueId(), targetId);
+        String name = target.getName() == null ? args[1] : target.getName();
+        if (added) {
+            allowlist.save();
+            messages.send(sender, "tpa.allow.added", messages.placeholder("player", name));
+        } else {
+            messages.send(sender, "tpa.allow.exists", messages.placeholder("player", name));
+        }
+    }
+
+    private void handleTpaDisallow(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            messages.send(sender, "player_only");
+            return;
+        }
+        if (!hasPermission(player, "crossanywhere.tpa.allowlist")) {
+            messages.send(sender, "no_permission");
+            return;
+        }
+        if (args.length < 2) {
+            messages.send(sender, "usage.tpadisallow");
+            return;
+        }
+        OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+        UUID targetId = target.getUniqueId();
+        boolean removed = allowlist.remove(player.getUniqueId(), targetId);
+        String name = target.getName() == null ? args[1] : target.getName();
+        if (removed) {
+            allowlist.save();
+            messages.send(sender, "tpa.allow.removed", messages.placeholder("player", name));
+        } else {
+            messages.send(sender, "tpa.allow.not_found", messages.placeholder("player", name));
+        }
+    }
+
+    private void handleTpaAllowList(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            messages.send(sender, "player_only");
+            return;
+        }
+        if (!hasPermission(player, "crossanywhere.tpa.allowlist")) {
+            messages.send(sender, "no_permission");
+            return;
+        }
+        List<UUID> allowed = allowlist.list(player.getUniqueId());
+        if (allowed.isEmpty()) {
+            messages.send(sender, "tpa.allow.list_empty");
+            return;
+        }
+        List<String> names = new ArrayList<>();
+        for (UUID uuid : allowed) {
+            OfflinePlayer offline = Bukkit.getOfflinePlayer(uuid);
+            String name = offline.getName();
+            names.add(name == null ? uuid.toString() : name);
+        }
+        String joined = String.join(", ", names);
+        messages.send(sender, "tpa.allow.list", messages.placeholder("list", joined));
     }
 
     private TpaRequest findRequestForTarget(Player player, String[] args) {
@@ -797,6 +897,23 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
                 .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(prefix))
                 .sorted(String.CASE_INSENSITIVE_ORDER)
                 .collect(Collectors.toList());
+    }
+
+    private List<String> suggestAllowlistNames(UUID uuid, String prefix) {
+        List<UUID> allowed = allowlist.list(uuid);
+        if (allowed.isEmpty()) {
+            return List.of();
+        }
+        List<String> names = new ArrayList<>();
+        for (UUID allowedId : allowed) {
+            OfflinePlayer offline = Bukkit.getOfflinePlayer(allowedId);
+            String name = offline.getName();
+            if (name != null && name.toLowerCase(Locale.ROOT).startsWith(prefix)) {
+                names.add(name);
+            }
+        }
+        names.sort(String.CASE_INSENSITIVE_ORDER);
+        return names;
     }
 
     private List<String> suggestPendingSenderNames(UUID target, String prefix) {

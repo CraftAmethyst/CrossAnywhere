@@ -1,6 +1,8 @@
 # CrossAnywhere
 
-CrossAnywhere is a Paper/Spigot teleport plugin for Minecraft 1.21+ (Java 21). It provides personal/global waypoints, TPA requests, back, safety checks, cooldowns, and configurable costs. All messages use Adventure/MiniMessage and support i18n.
+CrossAnywhere is a Paper/Spigot teleport plugin for Minecraft 1.20+ (Java 21). It provides personal/global waypoints,
+TPA requests, back, safety checks, cooldowns, and configurable costs. All messages use Adventure/MiniMessage and support
+i18n.
 
 ## Features
 
@@ -17,7 +19,7 @@ CrossAnywhere is a Paper/Spigot teleport plugin for Minecraft 1.21+ (Java 21). I
 
 ## Requirements
 
-- Paper 1.21+
+- Paper 1.20+
 - Java 21
 
 ## Installation
@@ -59,6 +61,9 @@ Other:
 - `/ca cancel` - Cancel all outgoing TPA requests you sent.
 - `/ca accept|allow [player]` - Accept the latest request or a specific player's request.
 - `/ca deny|reject [player]` - Deny the latest request or a specific player's request.
+- `/ca tpaallow <player>` - Allow a player to teleport to you directly without confirmation.
+- `/ca tpadisallow <player>` - Remove a player from your direct-teleport allowlist.
+- `/ca tpaallowlist` - Show your direct-teleport allowlist.
 - `/ca back` - Return to your last recorded location.
 - `/ca confirm` - Confirm a pending unsafe teleport.
 - `/ca cancelconfirm` - Cancel a pending unsafe teleport confirmation.
@@ -101,6 +106,7 @@ Shortcut commands:
 - `crossanywhere.tphere`
 - `crossanywhere.tpa`
 - `crossanywhere.tpahere`
+- `crossanywhere.tpa.allowlist`
 - `crossanywhere.back`
 - `crossanywhere.easy`
 - `crossanywhere.crossworld`
@@ -113,6 +119,7 @@ Shortcut commands:
 
 - `plugins/CrossAnywhere/personal_waypoints.json`
 - `plugins/CrossAnywhere/global_waypoints.json`
+- `plugins/CrossAnywhere/tpa_allowlist.json`
 - `plugins/CrossAnywhere/stp_uuid_map.json` (optional name -> UUID map for import)
 - `plugins/CrossAnywhere/stp_world_map.json` (optional dimension -> world map for import)
 

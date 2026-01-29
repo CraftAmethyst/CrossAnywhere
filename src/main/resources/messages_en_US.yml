@@ -10,6 +10,8 @@ help.header: |-
   <gray>/ca tp|tphere <player></gray>
   <gray>/ca tpa|tpahere <player></gray>
   <gray>/ca accept|deny [player]</gray>
+  <gray>/ca tpaallow|tpadisallow <player></gray>
+  <gray>/ca tpaallowlist</gray>
   <gray>/ca back</gray>
   <gray>/ca reload</gray>
   <gray>/ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]</gray>
@@ -29,6 +31,8 @@ usage.del: "<yellow>Usage: /ca delp|delg <name></yellow>"
 usage.desc: "<yellow>Usage: /ca descp|descg <name> <desc...></yellow>"
 usage.tp_player: "<yellow>Usage: /ca tp|tphere <player></yellow>"
 usage.tpa: "<yellow>Usage: /ca tpa|tpahere <player></yellow>"
+usage.tpaallow: "<yellow>Usage: /ca tpaallow <player></yellow>"
+usage.tpadisallow: "<yellow>Usage: /ca tpadisallow <player></yellow>"
 usage.importstp: "<yellow>Usage: /ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]</yellow>"
 
 importstp.start: "<gray>Importing STP data: <white><file></white>...</gray>"
@@ -98,6 +102,8 @@ tpa.duplicate: "<red>You already have a pending request to that player.</red>"
 tpa.request.to_target: "<yellow><player></yellow> wants to teleport to you. <accept> <deny>"
 tpa.request.here: "<yellow><player></yellow> wants you to teleport to them. <accept> <deny>"
 tpa.sent: "<gray>Request sent to <white><player></white>.</gray>"
+tpa.auto.sent: "<green><white><player></white> allows direct teleport. Teleported.</green>"
+tpa.auto.received: "<gray><white><player></white> teleported to you directly.</gray>"
 tpa.cancelled: "<yellow>Cancelled pending requests.</yellow>"
 tpa.cancelled_target: "<yellow><player></yellow> cancelled the request.</yellow>"
 tpa.none: "<red>No pending requests.</red>"
@@ -113,3 +119,10 @@ tpa.accept:
 tpa.deny:
   label: "<noprefix><gradient:#ffb3b3:#ffd7d7>[Deny]</gradient>"
   hover: "<noprefix><gray>Deny request</gray>"
+
+tpa.allow.added: "<green>Allowed <white><player></white> to teleport to you directly.</green>"
+tpa.allow.exists: "<yellow><white><player></white> is already in the allowlist.</yellow>"
+tpa.allow.removed: "<green>Removed direct-teleport permission for <white><player></white>.</green>"
+tpa.allow.not_found: "<yellow><white><player></white> is not in the allowlist.</yellow>"
+tpa.allow.list: "<gray>Direct-teleport allowlist: <white><list></white></gray>"
+tpa.allow.list_empty: "<gray>Allowlist is empty.</gray>"

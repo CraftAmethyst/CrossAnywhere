@@ -54,10 +54,11 @@ CrossAnywhere 是一个面向 Paper/Spigot 的传送插件（Minecraft 1.21+，J
 - `/ca cancel`
 - `/ca accept|allow [player]`
 - `/ca deny|reject [player]`
-- `/ca back`
-- `/ca confirm`
-- `/ca cancelconfirm`
-- `/ca <name>`（easy_tp=true）
+    - `/ca back`
+    - `/ca confirm`
+    - `/ca cancelconfirm`
+    - `/ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]`
+    - `/ca <name>`（easy_tp=true）
 
 快捷命令：
 - `/setp /tpp /delp /listp /descp`
@@ -91,6 +92,8 @@ CrossAnywhere 是一个面向 Paper/Spigot 的传送插件（Minecraft 1.21+，J
 
 - `plugins/CrossAnywhere/personal_waypoints.json`
 - `plugins/CrossAnywhere/global_waypoints.json`
+- `plugins/CrossAnywhere/stp_uuid_map.json`（可选：导入时的 name -> UUID 映射）
+- `plugins/CrossAnywhere/stp_world_map.json`（可选：导入时的 dimension -> world 映射）
 
 ## 配置说明
 

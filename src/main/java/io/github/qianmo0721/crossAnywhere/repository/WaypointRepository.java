@@ -4,12 +4,7 @@ import io.github.qianmo0721.crossAnywhere.model.Waypoint;
 import io.github.qianmo0721.crossAnywhere.util.NameValidator;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class WaypointRepository {
     private final Path personalFile;
@@ -54,6 +49,19 @@ public final class WaypointRepository {
             dirty = false;
         } catch (Exception ignored) {
         }
+    }
+
+    public synchronized void replaceAll(Map<String, Map<String, Waypoint>> personalData,
+                                        Map<String, Waypoint> globalData) {
+        personal.clear();
+        global.clear();
+        if (personalData != null) {
+            personal.putAll(personalData);
+        }
+        if (globalData != null) {
+            global.putAll(globalData);
+        }
+        dirty = true;
     }
 
     public synchronized Waypoint getPersonal(UUID uuid, String name) {

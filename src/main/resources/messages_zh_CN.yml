@@ -12,6 +12,7 @@ help.header: |-
   <gray>/ca accept|deny [player]</gray>
   <gray>/ca back</gray>
   <gray>/ca reload</gray>
+  <gray>/ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]</gray>
 
 player_only: "<red>该命令只能由玩家使用。</red>"
 no_permission: "<red>你没有权限。</red>"
@@ -28,6 +29,13 @@ usage.del: "<yellow>用法: /ca delp|delg <name></yellow>"
 usage.desc: "<yellow>用法: /ca descp|descg <name> <desc...></yellow>"
 usage.tp_player: "<yellow>用法: /ca tp|tphere <player></yellow>"
 usage.tpa: "<yellow>用法: /ca tpa|tpahere <player></yellow>"
+usage.importstp: "<yellow>用法: /ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]</yellow>"
+
+importstp.start: "<gray>正在导入 STP 数据: <white><file></white>...</gray>"
+importstp.done: "<green>导入完成: 玩家 <white><players></white>，个人点 <white><personal></white>，全局点 <white><global></white>，跳过 <white><skipped></white>。</green>"
+importstp.missing: "<red>找不到文件 <white><file></white>。</red>"
+importstp.failed: "<red>导入失败: <white><error></white></red>"
+importstp.warnings: "<yellow>导入完成，但有 <white><count></white> 条警告，详情请查看控制台。</yellow>"
 
 waypoint.invalid_name: "<red>名称不合法，长度上限: <white><max></white>。</red>"
 waypoint.limit: "<red>传送点数量已达上限 (<white><max></white>)。</red>"

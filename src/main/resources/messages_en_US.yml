@@ -12,6 +12,7 @@ help.header: |-
   <gray>/ca accept|deny [player]</gray>
   <gray>/ca back</gray>
   <gray>/ca reload</gray>
+  <gray>/ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]</gray>
 
 player_only: "<red>This command is player-only.</red>"
 no_permission: "<red>You don't have permission.</red>"
@@ -28,6 +29,13 @@ usage.del: "<yellow>Usage: /ca delp|delg <name></yellow>"
 usage.desc: "<yellow>Usage: /ca descp|descg <name> <desc...></yellow>"
 usage.tp_player: "<yellow>Usage: /ca tp|tphere <player></yellow>"
 usage.tpa: "<yellow>Usage: /ca tpa|tpahere <player></yellow>"
+usage.importstp: "<yellow>Usage: /ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]</yellow>"
+
+importstp.start: "<gray>Importing STP data: <white><file></white>...</gray>"
+importstp.done: "<green>Import complete: players <white><players></white>, personal <white><personal></white>, global <white><global></white>, skipped <white><skipped></white>.</green>"
+importstp.missing: "<red>File not found: <white><file></white>.</red>"
+importstp.failed: "<red>Import failed: <white><error></white></red>"
+importstp.warnings: "<yellow>Import completed with <white><count></white> warnings. Check console for details.</yellow>"
 
 waypoint.invalid_name: "<red>Invalid name. Max length: <white><max></white>.</red>"
 waypoint.limit: "<red>Waypoint limit reached (<white><max></white>).</red>"

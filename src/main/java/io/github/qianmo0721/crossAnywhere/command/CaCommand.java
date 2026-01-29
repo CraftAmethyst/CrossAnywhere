@@ -3,6 +3,7 @@ package io.github.qianmo0721.crossAnywhere.command;
 import io.github.qianmo0721.crossAnywhere.CrossAnywhere;
 import io.github.qianmo0721.crossAnywhere.config.PluginConfig;
 import io.github.qianmo0721.crossAnywhere.i18n.MessageService;
+import io.github.qianmo0721.crossAnywhere.importer.StpImporter;
 import io.github.qianmo0721.crossAnywhere.manager.BackManager;
 import io.github.qianmo0721.crossAnywhere.manager.ConfirmManager;
 import io.github.qianmo0721.crossAnywhere.manager.TpaManager;
@@ -27,14 +28,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class CaCommand implements CommandExecutor, TabCompleter {
@@ -61,7 +58,8 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
             "back",
             "confirm",
             "cancelconfirm",
-            "reload"
+            "reload",
+            "importstp"
     );
 
     private final CrossAnywhere plugin;
@@ -136,6 +134,7 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
             case "confirm" -> handleConfirm(sender);
             case "cancelconfirm" -> handleCancelConfirm(sender);
             case "reload" -> handleReload(sender);
+            case "importstp" -> handleImportStp(sender, args);
             default -> {
                 if (config.easyTp && args.length == 1) {
                     handleEasyTeleport(sender, sub);
@@ -179,6 +178,9 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
                     }
                     case "accept", "allow", "deny", "reject" -> {
                         return suggestPendingSenderNames(player.getUniqueId(), prefix);
+                    }
+                    case "importstp" -> {
+                        return suggestImportFlags(prefix);
                     }
                     default -> {
                         return List.of();
@@ -641,6 +643,81 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
         messages.send(sender, "reload.success");
     }
 
+    private void handleImportStp(CommandSender sender, String[] args) {
+        if (sender instanceof Player player && !player.hasPermission("crossanywhere.admin")) {
+            messages.send(sender, "no_permission");
+            return;
+        }
+
+        ImportOptions options = ImportOptions.parse(args);
+        if (options == null) {
+            messages.send(sender, "usage.importstp");
+            return;
+        }
+
+        Path dataFolder = plugin.getDataFolder().toPath();
+        Path inputFile = dataFolder.resolve(options.fileName);
+        if (!Files.exists(inputFile)) {
+            messages.send(sender, "importstp.missing", messages.placeholder("file", options.fileName));
+            return;
+        }
+
+        messages.send(sender, "importstp.start", messages.placeholder("file", options.fileName));
+
+        List<String> warnings = new ArrayList<>();
+        Map<String, String> uuidMap = StpImporter.loadStringMap(dataFolder.resolve("stp_uuid_map.json"), warnings);
+        Map<String, String> worldMap = StpImporter.loadStringMap(dataFolder.resolve("stp_world_map.json"), warnings);
+
+        StpImporter.Result result;
+        try {
+            result = StpImporter.load(inputFile, options.uuidMode, options.includeBack, uuidMap, worldMap);
+        } catch (Exception ex) {
+            String message = ex.getMessage() == null ? "unknown error" : ex.getMessage();
+            messages.send(sender, "importstp.failed", messages.placeholder("error", message));
+            plugin.getLogger().warning("STP import failed: " + message);
+            return;
+        }
+
+        if (options.clear) {
+            repository.replaceAll(result.personal(), result.global());
+        } else {
+            for (Map.Entry<String, Map<String, Waypoint>> entry : result.personal().entrySet()) {
+                UUID owner;
+                try {
+                    owner = UUID.fromString(entry.getKey());
+                } catch (Exception ex) {
+                    warnings.add("Invalid UUID key in import data: " + entry.getKey());
+                    continue;
+                }
+                for (Waypoint waypoint : entry.getValue().values()) {
+                    repository.setPersonal(owner, waypoint);
+                }
+            }
+            for (Waypoint waypoint : result.global().values()) {
+                repository.setGlobal(waypoint);
+            }
+        }
+
+        repository.save();
+
+        messages.send(sender, "importstp.done",
+                messages.placeholder("players", String.valueOf(result.personalPlayers())),
+                messages.placeholder("personal", String.valueOf(result.personalWaypoints())),
+                messages.placeholder("global", String.valueOf(result.globalWaypoints())),
+                messages.placeholder("skipped", String.valueOf(result.skipped())));
+
+        if (!result.warnings().isEmpty()) {
+            warnings.addAll(result.warnings());
+        }
+        if (!warnings.isEmpty()) {
+            messages.send(sender, "importstp.warnings",
+                    messages.placeholder("count", String.valueOf(warnings.size())));
+            for (String warning : warnings) {
+                plugin.getLogger().warning("[STP Import] " + warning);
+            }
+        }
+    }
+
     private void handleEasyTeleport(CommandSender sender, String name) {
         if (!(sender instanceof Player player)) {
             messages.send(sender, "player_only");
@@ -685,6 +762,19 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
         return player.hasPermission("crossanywhere.admin") || player.hasPermission(permission);
     }
 
+    private List<String> suggestImportFlags(String prefix) {
+        List<String> flags = List.of(
+                "--include-back",
+                "--clear",
+                "--offline-uuid",
+                "--raw-uuid",
+                "--auto-uuid"
+        );
+        return flags.stream()
+                .filter(flag -> flag.startsWith(prefix))
+                .collect(Collectors.toList());
+    }
+
     private List<String> suggestWaypointNames(UUID uuid, String prefix) {
         return repository.listPersonal(uuid).stream()
                 .map(Waypoint::getName)
@@ -717,4 +807,39 @@ public final class CaCommand implements CommandExecutor, TabCompleter {
                 .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(prefix))
                 .collect(Collectors.toList());
     }
+
+    private record ImportOptions(String fileName, boolean includeBack, boolean clear, StpImporter.UuidMode uuidMode) {
+
+        private static ImportOptions parse(String[] args) {
+                String fileName = "example_data.json";
+                boolean includeBack = false;
+                boolean clear = false;
+                StpImporter.UuidMode uuidMode = StpImporter.UuidMode.BUKKIT;
+                boolean fileSet = false;
+
+                for (int i = 1; i < args.length; i++) {
+                    String arg = args[i];
+                    String lower = arg.toLowerCase(Locale.ROOT);
+                    if (lower.startsWith("-")) {
+                        switch (lower) {
+                            case "--include-back", "-b" -> includeBack = true;
+                            case "--clear", "-c" -> clear = true;
+                            case "--offline-uuid", "--offline" -> uuidMode = StpImporter.UuidMode.OFFLINE;
+                            case "--raw-uuid", "--raw" -> uuidMode = StpImporter.UuidMode.RAW;
+                            case "--auto-uuid", "--auto" -> uuidMode = StpImporter.UuidMode.AUTO;
+                            default -> {
+                                return null;
+                            }
+                        }
+                    } else if (!fileSet) {
+                        fileName = arg;
+                        fileSet = true;
+                    } else {
+                        return null;
+                    }
+                }
+
+                return new ImportOptions(fileName, includeBack, clear, uuidMode);
+            }
+        }
 }

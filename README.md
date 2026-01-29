@@ -54,10 +54,11 @@ Other:
 - `/ca cancel`
 - `/ca accept|allow [player]`
 - `/ca deny|reject [player]`
-- `/ca back`
-- `/ca confirm`
-- `/ca cancelconfirm`
-- `/ca <name>` (easy_tp=true)
+    - `/ca back`
+    - `/ca confirm`
+    - `/ca cancelconfirm`
+    - `/ca importstp [file] [--include-back] [--offline-uuid|--raw-uuid|--auto-uuid] [--clear]`
+    - `/ca <name>` (easy_tp=true)
 
 Shortcut commands:
 - `/setp /tpp /delp /listp /descp`
@@ -91,6 +92,8 @@ Shortcut commands:
 
 - `plugins/CrossAnywhere/personal_waypoints.json`
 - `plugins/CrossAnywhere/global_waypoints.json`
+- `plugins/CrossAnywhere/stp_uuid_map.json` (optional name -> UUID map for import)
+- `plugins/CrossAnywhere/stp_world_map.json` (optional dimension -> world map for import)
 
 ## Configuration
 
